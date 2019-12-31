@@ -1,6 +1,13 @@
 /node_modules/*
 /logs/*
 yarn-error.log
-/.idea/*
-/public/vendor/*
-/public/vendor/
+/.idea/
+/public/vendor/chart.js/
+/public/vendor/chartjs-plugin-datalabels/
+/public/vendor/chartjs-plugin-streaming/
+/public/vendor/jquery/
+/public/vendor/moment/
+/public/vendor/nonblockjs/
+/public/vendor/pnotify/
+/public/vendor/socket.io-client/
+/public/vendor/uikit/
