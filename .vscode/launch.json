@@ -1,0 +1,41 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Launch nodemon",
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceFolder}/src/index.js",
+      "stopOnEntry": false,
+      "args": ["--inspect"],
+      "cwd": "${workspaceFolder}",
+      "preLaunchTask": null,
+      "runtimeExecutable": null,
+      "runtimeArgs": ["--nolazy"],
+      "env": {
+        "NODE_ENV": "development",
+        "NODE_PATH": "."
+      },
+      "sourceMaps": false,
+      "autoAttachChildProcesses": true,
+      "restart": true,
+      "localRoot": "${workspaceFolder}/",
+      "remoteRoot": "${workspaceFolder}/"
+    },
+    {
+      "name": "Chrome Debugger",
+      "type": "chrome",
+      "request": "launch",
+      "url": "http://localhost/",
+      "webRoot": "${workspaceFolder}/public"
+    },
+    {
+      "name": "Attach to url with files served from ./public",
+      "type": "chrome",
+      "request": "attach",
+      "port": 9222,
+      "url": "http://localhost/",
+      "webRoot": "${workspaceFolder}/public"
+    }
+  ]
+}

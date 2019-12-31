@@ -1,0 +1,13 @@
+{
+  "restartable": "qq",
+  "ignore": [".git", "node_modules/**/*", "src/views/**/*"],
+  "verbose": false,
+  "execMap": {},
+  "events": {},
+  "watch": ["src", "config", "public"],
+  "env": {
+    "NODE_ENV": "development"
+  },
+  "ext": "js,json",
+  "delay": 500
+}

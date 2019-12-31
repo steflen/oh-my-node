@@ -1,0 +1,26 @@
+div(uk-sticky='sel-target: .uk-navbar-container; cls-active: uk-navbar-sticky; bottom: #transparent-sticky-navbar')
+  nav.uk-navbar-container(uk-navbar='mode: click', style='position: relative; z-index: 980;')
+    .uk-navbar-left
+      .uk-navbar-item
+        a.uk-logo(href='/')
+          img.topbar-logo(src='/static/logo-48x48.png', alt='')
+    .uk-navbar-right
+      .uk-navbar-item
+        form(action='javascript:void(0)')
+          input.uk-input.uk-form-width-small(type='text', placeholder='Search')
+          //- button.uk-button.uk-button-default Search
+      ul.uk-navbar-nav
+        li(class='uk-visible@m')
+          a.uk-icon-link(href='/feedback', uk-tooltip='title: Tell us what u think; delay: 1000')
+            span.uk-icon.uk-margin-small-right(uk-icon='icon: comments')
+            | Feedback
+        li(class='uk-visible@m')
+          a.uk-icon-link(href='/signin', uk-tooltip='title: If you want to join..; delay: 1000')
+            span.uk-icon.uk-margin-small-right(uk-icon='icon: sign-in')
+            | Sign-In
+        li(class='uk-visible@m')
+          a.uk-icon-link(href='/signout', uk-tooltip='title: If you want to leave..; delay: 1000')
+            span.uk-icon.uk-margin-small-right(uk-icon='icon: sign-out')
+            | Sign-Out
+        li.uk-navbar-right(class='uk-hidden@m')
+          a.uk-navbar-toggle(data-uk-toggle='', data-uk-navbar-toggle-icon='', href='#offcanvas-nav', title='Offcanvas', data-uk-tooltip='')

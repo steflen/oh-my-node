@@ -1,0 +1,23 @@
+extends ../layout
+
+block content
+
+  .uk-section
+    .uk-container.uk-container-expand
+      .uk-flex.uk-flex-center
+        .uk-card.uk-card-default.uk-card-body(class='uk-width-1-4@l uk-width-1-1@s uk-width-1-2@m')
+          h3.uk-card-title.uk-text-center Credentials please!
+          hr
+          form(id='signin', action='/signin', method='POST')
+          input(form='signin' type='hidden', name='_csrf', value=_csrf)
+          .uk-margin-large-top
+          .uk-inline.uk-width-1-1
+            span.uk-form-icon.uk-form-icon-flip(uk-icon='icon: user')
+            input.uk-input.uk-form-large(form='signin', name='username', id='username', required='', placeholder='Username', type='text' uk-tooltip="title: Please provide your username; delay: 2000")
+          .uk-margin
+          .uk-inline.uk-width-1-1
+            span.uk-form-icon.uk-form-icon-flip(uk-icon='icon: lock')
+            input.uk-input.uk-form-large(form='signin', name='password', id='password', required='', placeholder='Password', type='password' uk-tooltip="title: Please provide your password; delay: 2000")
+          .uk-margin-large-top
+          button.uk-button.uk-button-text.uk-width-1-1(form='signin', type='submit') Enter the void
+

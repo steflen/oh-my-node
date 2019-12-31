@@ -1,0 +1,22 @@
+if messages.alert
+  for alert in messages.alert
+    if(alert.type === 'primary')
+      .uk-alert-primary(uk-alert='')
+        a.uk-alert-close(uk-close='')
+        h3 #{ alert.title }
+        p #{ alert.msg }
+    if(alert.type === 'success')
+      .uk-alert-success(uk-alert='')
+        a.uk-alert-close(uk-close='')
+        h3 #{ alert.title }
+        p #{ alert.msg }
+    if(alert.type === 'warning')
+      .uk-alert-warning(uk-alert='')
+        a.uk-alert-close(uk-close='')
+        h3 #{ alert.title }
+        p #{ alert.msg }
+    if(alert.type === 'danger')
+      .uk-alert-danger(uk-alert='')
+        a.uk-alert-close(uk-close='')
+        h3 #{ alert.title }
+        p #{ alert.msg }

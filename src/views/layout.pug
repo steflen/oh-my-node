@@ -1,0 +1,35 @@
+doctype html
+
+html
+  head
+    title OH MY NODE
+    meta(charset='utf-8')
+    meta(name='viewport' content='width=device-width, initial-scale=1')
+
+    link(rel='stylesheet' type='text/css' href='vendor/uikit/css/uikit.min.css')
+    link(rel='stylesheet' type='text/css' media='all'  href='/vendor/pnotify/PNotifyBrightTheme.css')
+
+    script(type='text/javascript' src='/vendor/jquery/jquery.min.js')
+    script(type='text/javascript' src='vendor/uikit/js/uikit.min.js')
+    script(type='text/javascript' src='vendor/uikit/js/uikit-icons.min.js')
+    script(type='text/javascript' src='/vendor/socket.io-client/socket.io.js')
+    script(type='text/javascript' src='/vendor/nonblockjs/NonBlock.es5.js')
+    script(type='text/javascript' src='/vendor/pnotify/PNotify.js')
+
+  //-if there is flash of unstyled content (FOUC), it can be supressed with initial body hide
+  //-body(style='display:none')
+
+  body
+    .uk-offcanvas-content
+      include partials/variables
+      include partials/topbar
+      include partials/offcanvas
+      #content
+        include partials/alert
+        block content
+
+    script(type='text/javascript' src='/js/partials/flash.js')
+
+
+
+

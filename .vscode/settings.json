@@ -1,0 +1,9 @@
+{
+  "editor.formatOnSave": true,
+  "eslint.alwaysShowStatus": true,
+  "eslint.workingDirectories": ["./src", "./config"],
+  "eslint.nodePath": ".",
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": true
+  }
+}

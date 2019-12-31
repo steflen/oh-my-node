@@ -1,0 +1,116 @@
+{
+  "name": "oh-my-node",
+  "author": "steflen",
+  "version": "0.0.0",
+  "engines": {
+    "node": ">= 12.13.0",
+    "yarn": ">= 1.19.1"
+  },
+  "bin": "src/index.js",
+  "scripts": {
+    "postinstall": "node ./node_modules/frontend-dependencies/index.js",
+    "dev": "cross-env nodemon src/index.js",
+    "dev:verbose": "cross-env DEBUG=* nodemon src/index.js",
+    "inspect": "nodemon --inspect src/index.js",
+    "prod": "node src/index.js",
+    "build:exe": "pkg . --out-path ./dist/exe",
+    "test": "echo \"No test specified\" && exit 0",
+    "format": "prettier --write {src,config}/**/*.js",
+    "format:check": "eslint --print-config src/application/index.js | eslint-config-prettier-check",
+    "lint": "eslint \"./**/*.js\"",
+    "lint:fix": "eslint --fix ./**/*.js"
+  },
+  "dependencies": {
+    "awilix": "^4.2.0",
+    "awilix-express": "^2.1.1",
+    "body-parser": "latest",
+    "cookie-parser": "~1.4.3",
+    "cors": "^2.8.5",
+    "express": "~4.16.0",
+    "express-flash": "^0.0.2",
+    "express-session": "^1.17.0",
+    "http-errors": "~1.6.2",
+    "http-status": "^1.3.1",
+    "lusca": "^1.6.1",
+    "memorystore": "^1.6.1",
+    "method-override": "^3.0.0",
+    "morgan": "^1.9.1",
+    "multer": "^1.4.2",
+    "pidusage": "^2.0.17",
+    "pug": "^2.0.4",
+    "rimraf": "^3.0.0",
+    "serve-favicon": "^2.5.0",
+    "socket.io": "^2.3.0",
+    "winston": "^3.2.1",
+    "winston-daily-rotate-file": "^3.7.0"
+  },
+  "devDependencies": {
+    "cross-env": "^6.0.3",
+    "eslint": "6.1.0",
+    "eslint-config-prettier": "^4.0.0",
+    "eslint-config-standard": "^14.1.0",
+    "eslint-plugin-import": "^2.18.2",
+    "eslint-plugin-node": "^10.0.0",
+    "eslint-plugin-prettier": "^3.0.1",
+    "eslint-plugin-promise": "^4.2.1",
+    "frontend-dependencies": "^1.1.7",
+    "nodemon": "^1.19.4",
+    "prettier": "^1.16.4"
+  },
+  "optionalDependencies": {
+    "pkg": "^4.4.0"
+  },
+  "frontendDependencies": {
+    "target": "public/vendor/",
+    "packages": {
+      "nonblockjs": {
+        "src": "NonBlock.es5.js",
+        "namespaced": true
+      },
+      "pnotify": {
+        "src": "{dist/PNotifyBrightTheme.css,dist/iife/PNotify.js,dist/iife/PNotify.js.map}",
+        "namespaced": true
+      },
+      "socket.io-client": {
+        "version": "github:socketio/socket.io-client",
+        "src": "{dist/socket.io.js,dist/socket.io.js.map}",
+        "namespaced": true
+      },
+      "chart.js": {
+        "version": "^2.7.3",
+        "src": "{dist/Chart.min.js,dist/Chart.bundle.min.js}",
+        "namespaced": true
+      },
+      "chartjs-plugin-datalabels": {
+        "version": "^0.4.0",
+        "src": "dist/chartjs-plugin-datalabels.min.js",
+        "namespaced": true
+      },
+      "chartjs-plugin-streaming": {
+        "version": "^1.7.0",
+        "src": "dist/chartjs-plugin-streaming.min.js",
+        "namespaced": true
+      },
+      "moment": {
+        "version": "^2.22.2",
+        "src": "min/moment.min.js",
+        "namespaced": true
+      },
+      "jquery": {
+        "src": "dist/jquery.min.js",
+        "namespaced": true
+      },
+      "uikit": {
+        "src": "{dist/css,dist/js}",
+        "namespaced": true
+      }
+    }
+  },
+  "pkg": {
+    "scripts": [],
+    "assets": [],
+    "targets": [
+      "node10"
+    ]
+  }
+}
