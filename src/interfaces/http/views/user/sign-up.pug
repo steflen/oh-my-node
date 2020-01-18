@@ -1,0 +1,53 @@
+extends ../layout
+block content
+  .uk-section
+    .uk-container.uk-container-expand
+      .uk-flex.uk-flex-center
+        .uk-card.uk-card-default.uk-card-hover.uk-card-body(
+          class='uk-width-1-4@l uk-width-1-1@s uk-width-1-2@m')
+          h3.uk-card-title.uk-text-center Create Account
+          hr
+          form(id='signup'
+           action='/signup'
+            method='POST')
+          input(
+            form='signup'
+            type='hidden'
+            name='_csrf'
+            value=_csrf)
+          .uk-inline.uk-width-1-1.uk-margin-large-top
+            span.uk-form-icon.uk-form-icon-flip(
+              uk-icon='icon: mail')
+            input.uk-input.uk-form-large(
+              form='signup'
+              name='email'
+              required=''
+              placeholder='Email Address'
+              type='text'
+              uk-tooltip="title: Provide a valid e-mail address; delay: 2000")
+          .uk-inline.uk-width-1-1.uk-margin
+            span.uk-form-icon.uk-form-icon-flip(
+              uk-icon='icon: lock')
+            input.uk-input.uk-form-large(
+              form='signup'
+              name='password'
+              required=''
+              placeholder='Password'
+              type='password'
+              uk-tooltip="title: Please provide your password; delay: 2000")
+          .uk-inline.uk-width-1-1.uk-margin
+            span.uk-form-icon.uk-form-icon-flip(
+              uk-icon='icon: lock')
+            input.uk-input.uk-form-large(
+              form='signup'
+              required=''
+              name='confirm'
+              placeholder='Confirm password'
+              type='password'
+              uk-tooltip="title: Please confirm your password; delay: 2000")
+          button.uk-button.uk-button-primary.uk-width-1-1.uk-margin-large-top(
+            form='signup'
+            type='submit') Sign-Up
+          a.uk-button.uk-button-text.uk-margin-top.uk-width-1-1(
+            href='/signin') Back to Sign-In
+

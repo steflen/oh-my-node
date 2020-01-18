@@ -2,6 +2,7 @@
 /logs/*
 yarn-error.log
 /.idea/
+.env
 /public/vendor/chart.js/
 /public/vendor/chartjs-plugin-datalabels/
 /public/vendor/chartjs-plugin-streaming/

@@ -1,26 +1,36 @@
 const { createContainer, asValue, asClass, asFunction } = require('awilix')
-
+const { scopePerRequest } = require('awilix-express')
 const { Config } = require('../config')
-const { Logger } = require('./logger')
-const { Server, Router } = require('./http')
-const { Application } = require('./application')
-const { FlashApi } = require('./socket-io')
+const { Logger } = require('./infrastructure/logger')
+const { Server, Router } = require('./interfaces/http')
+const { auth } = require('./interfaces/http/middleware')
+const Application = require('./application')
+const { FlashApi } = require('./interfaces/socket-io')
+const { Mongo, UserModel, ProfileModel, FeedbackModel } = require('./infrastructure/db')
+const { Feedback, User } = require('./application/use-cases')
 
 const container = createContainer()
 
 container.register({
   config: asValue(Config),
+  mongo: asClass(Mongo).singleton(),
   application: asClass(Application).singleton(),
   httpServer: asClass(Server).singleton(),
   httpRouter: asFunction(Router).singleton(),
   flashApi: asFunction(FlashApi).singleton(),
-})
+  auth: asFunction(auth).singleton(),
 
-// Register middleware
-container.register({
+  //models
+  userModel: asFunction(UserModel).singleton(),
+  profileModel: asFunction(ProfileModel).singleton(),
+  feedbackModel: asFunction(FeedbackModel).singleton(),
+
+  //use-cases
+  feedback: asFunction(Feedback).singleton(),
+  user: asFunction(User).singleton(),
+
   // container middleware for scoped route injection
-  containerMiddleware: asValue(container),
-
+  containerMiddleware: asValue(scopePerRequest(container)),
   // some separate logger instances
   appLog: asFunction(Logger, {
     injector: () => ({
@@ -28,15 +38,15 @@ container.register({
     }),
   }).singleton(),
 
-  httpLog: asFunction(Logger, {
-    injector: () => ({
-      name: 'http',
-    }),
-  }).singleton(),
-
   samplerLog: asFunction(Logger, {
     injector: () => ({
       name: 'sampler',
+    }),
+  }).singleton(),
+
+  httpLog: asFunction(Logger, {
+    injector: () => ({
+      name: 'http',
     }),
   }).singleton(),
 })

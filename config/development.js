@@ -11,24 +11,31 @@ module.exports = {
     httpPort: 8000,
     httpsPort: 8443,
     startupDelay: 1000,
+    sslPassphrase: 'kiz-kiz-bam-bam',
   },
   log: {
     directory: 'logs',
     maxSize: '5m',
     zip: false,
     datePattern: 'YYYY-MM-DD',
-    namespacePrefix: 'tatü-tata-',
     severity: 'silly',
   },
-  discovery: {
-    hostname: hostname,
-    domain: `${hostname}.local`,
-    port: 8881,
-    type: 'http',
-    protocol: 'tcp',
-    txt: {
-      best: 'regards',
-      whoAmI: 'steLen',
+  jwt: {
+    secret: 'wadde-hadde-dudde-da',
+  },
+  sendGrid: {
+    apiKey: process.env.SENDGRID_API_KEY,
+    from: process.env.SENDGRID_MAILER,
+  },
+  mongo: {
+    connectionString: 'mongodb://localhost:27017/oh-my-node',
+    settings: {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+      serverSelectionTimeoutMS: 2000,
+      bufferCommands: false,
+      connectTimeoutMS: 10000,
+      useCreateIndex: true,
     },
   },
 }

@@ -11,9 +11,11 @@ const cors = require('cors')
 const bodyParser = require('body-parser')
 const methodOverride = require('method-override')
 const fs = require('fs')
+// https://github.com/adaltas/node-http-status
+const Status = require('http-status')
 
 class Server {
-  constructor({ config, httpRouter, httpLog, flashApi }) {
+  constructor({ auth, config, httpLog, httpRouter, flashApi }) {
     this.config = config
     this.log = httpLog
     this.app = express()
@@ -27,7 +29,7 @@ class Server {
         cert: fs.readFileSync(path.join(__dirname, './ssl/cert.pem'), 'utf8'),
         //will throw a decrypt error if passphrase not set
         //no error handler for now
-        passphrase: 'kiz-kiz-bam-bam',
+        passphrase: this.config.server.sslPassphrase,
       },
       this.app
     )
@@ -37,15 +39,15 @@ class Server {
 
     this.app
       .disable('x-powered-by')
-
+      .use('/uploads', express.static('uploads'))
       .use(
-        express.static(path.join(__dirname, '../../public'), {
+        express.static(path.join(__dirname, '../../../public'), {
           maxAge: '30 days',
         })
       )
-      .use(serveFavicon(path.join(__dirname, '../../public/static/favicon.ico')))
+      .use(serveFavicon(path.join(__dirname, '../../../public/static/favicon.ico')))
       .set('view engine', 'pug')
-      .set('views', path.join(__dirname, '../views'))
+      .set('views', path.join(__dirname, './views'))
       .use(
         session({
           store: new memorystore({ checkPeriod: 90000000 }), // prune expired sessions (random period ;)
@@ -55,11 +57,19 @@ class Server {
         })
       )
       .use(flashMessages())
+      .use(auth.initialize())
+      .use(auth.session())
       .use((req, res, next) => {
         res.io = io
         next()
       })
-      .use(cors())
+      .use(
+        cors({
+          origin: ['http://localhost:8000', 'https://localhost:8443'],
+          methods: ['GET', 'POST', 'PUT', 'DELETE'],
+          allowedHeaders: ['Content-Type', 'Authorization'],
+        })
+      )
       .use(methodOverride('X-HTTP-Method-Override'))
       .use(bodyParser.json())
       .use(bodyParser.urlencoded({ extended: false }))
@@ -75,7 +85,33 @@ class Server {
           referrerPolicy: 'same-origin',
         })
       )
+
+      //routers from routes folder
       .use(httpRouter)
+
+      // catch 404 and forward to error handler
+      .use((req, res, next) => {
+        const err = new Error('Not Found')
+        err.status = 404
+        next(err)
+      })
+
+    //error handl0r
+    // .use((err, req, res, next) => {
+    //   httpLog.error(`InternalServerError ${err.message}`)
+    //   httpLog.error(err.stack)
+    //   if (process.env.NODE_ENV === 'development')
+    //     res.status(Status.INTERNAL_SERVER_ERROR).json({
+    //       type: 'InternalServerError',
+    //       message: err.message,
+    //       stack: err.stack,
+    //     })
+    //   else
+    //     res.status(Status.INTERNAL_SERVER_ERROR).json({
+    //       type: 'InternalServerError',
+    //       message: err.message,
+    //     })
+    // })
   }
 
   start() {

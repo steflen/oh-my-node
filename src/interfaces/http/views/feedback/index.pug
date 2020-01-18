@@ -2,21 +2,21 @@ extends ../layout
 
 block content
   .uk-section-xsmall
-    .uk-container.uk-container-expand
+    .uk-container.uk-container-large
       .uk-grid-small.uk-child-width-1-1(uk-sortable='handle:.uk-sortable-handle', uk-grid='')
         form.uk-form-horizontal.uk-margin-large(id='feedback', action='/feedback', method='POST')
           input(form='feedback' type='hidden', name='_csrf', value=_csrf)
           fieldset.uk-fieldset
-            legend.uk-legend Gimme your feedback #{_csrf}
+            legend.uk-legend Gimme your feedback
             .uk-margin
-              label.uk-form-label(for='feedback-name') Text
+              label.uk-form-label(for='title') Title
               .uk-form-controls
                 input#feedback-name.uk-input(
                   form='feedback',
-                  name='feedback-name',
+                  name='title',
                   required='',
                   type='text',
-                  placeholder='Your name ;-)')
+                  placeholder='Short descriptive title')
             .uk-margin
               label.uk-form-label(for='rating') Overall rating
               .uk-form-controls
@@ -32,34 +32,34 @@ block content
                   option(value='bad') Bad
                   option(value='freakinbad') Freakin bad
             .uk-margin
-              .uk-form-label(for='opinion') Feel free ..
+              .uk-form-label(for='description') Feel free ..
               .uk-form-controls.uk-form-controls-text
                 textarea#opinion.uk-textarea(
                   rows='5',
                   form='feedback',
-                  name='opinion',
+                  name='description',
                   required='',
                   placeholder='What do you think ..')
             .uk-margin
-              .uk-form-label Will you come back?
+              .uk-form-label(for='comeback') Will you come back?
               .uk-form-controls.uk-form-controls-text(
                   form='feedback',
                   name='comeback',
                   required='')
                 label
-                  input.uk-radio(type='radio', name='comeback',required='')
+                  input.uk-radio(type='radio', name='comeback', value='yay', required='')
                   |  Yay
                 br
                 label
-                  input.uk-radio(type='radio', name='comeback')
+                  input.uk-radio(type='radio', name='comeback', value='notsure')
                   |  Not sure
                 br
                 label
-                  input.uk-radio(type='radio', name='comeback')
+                  input.uk-radio(type='radio', name='comeback', value='nay')
                   |  Nay
                 br
                 label
-                  input.uk-radio(type='radio', name='comeback')
+                  input.uk-radio(type='radio', name='comeback', value='surenot')
                   |  Sure not
             .uk-margin-large-top
               button.uk-button.uk-button-text.uk-width-1-1(form='feedback', type='submit') Click here to send
