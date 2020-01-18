@@ -6,17 +6,23 @@ qnd-rules: no tests, no comments :)
 
 omitting repository pattern to work with domain layer
 
-todo: 
+todo:
+
 - feedback listview
 - feedback detailview
 
-- jwt etc
-- user signup 
+- jwt api
+- sendgrid mail templates
+- user signup, with profile information
 - user login
 - user listview
 - user detailview
 - user edit profile
 
-- sampler factory to measure cpu/ram 
+- internal dashboard for authenticated users
+
+maybe then ?
+
+- sampler factory to measure cpu/ram
 - send samples via socketio to dashboard
 - chartjs demo with sample data

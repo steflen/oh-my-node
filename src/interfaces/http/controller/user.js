@@ -59,18 +59,15 @@ class UserController {
   async PostSignUp(req, res) {
     try {
       if (!req.body.email) throw new Error('No Email supplied')
-      const result = await this.user.find(req.body.email)
-      console.log(result)
-      console.log(result)
-      if (!!result) {
-        console.log(`user exists already`)
+      const userLookup = await this.user.find(req.body.email)
+      if (!!userLookup) {
+        req.flash('error', 'Email already registered')
+        res.redirect('/signup')
       } else {
-        console.log('user does not existd')
-        const result = await this.user.create(req.body.email)
-        console.log('result => ' + result)
+        const user = await this.user.create(req.body.email)
+        req.flash('success', `Successfully registered email ${user.email}`)
+        res.redirect('/')
       }
-      req.flash('success', 'Hello user')
-      res.redirect('/')
     } catch (err) {
       this.log.error(err)
       req.flash('error', 'Error signin in')

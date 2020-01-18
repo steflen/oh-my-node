@@ -13,7 +13,6 @@ const schema = new Schema({
   },
   birthday: {
     type: Date,
-    default: Date.now,
     required: false,
   },
   phone: {
