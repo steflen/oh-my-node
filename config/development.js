@@ -24,8 +24,8 @@ module.exports = {
     secret: 'wadde-hadde-dudde-da',
   },
   sendGrid: {
+    origin: process.env.SENDGRID_ORIGIN,
     apiKey: process.env.SENDGRID_API_KEY,
-    from: process.env.SENDGRID_MAILER,
   },
   mongo: {
     connectionString: 'mongodb://localhost:27017/oh-my-node',

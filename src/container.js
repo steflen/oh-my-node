@@ -8,6 +8,7 @@ const Application = require('./application')
 const { FlashApi } = require('./interfaces/socket-io')
 const { Mongo, UserModel, ProfileModel, FeedbackModel } = require('./infrastructure/db')
 const { Feedback, User } = require('./application/use-cases')
+const { Mailer } = require('./infrastructure/sendgrid')
 
 const container = createContainer()
 
@@ -19,6 +20,7 @@ container.register({
   httpRouter: asFunction(Router).singleton(),
   flashApi: asFunction(FlashApi).singleton(),
   auth: asFunction(auth).singleton(),
+  mailer: asClass(Mailer).singleton(),
 
   //models
   userModel: asFunction(UserModel).singleton(),

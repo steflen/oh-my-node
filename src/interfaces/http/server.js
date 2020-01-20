@@ -9,6 +9,7 @@ const memorystore = require('memorystore')(session)
 const lusca = require('lusca')
 const cors = require('cors')
 const bodyParser = require('body-parser')
+const cookieParser = require('cookie-parser')
 const methodOverride = require('method-override')
 const fs = require('fs')
 // https://github.com/adaltas/node-http-status
@@ -31,7 +32,7 @@ class Server {
         //no error handler for now
         passphrase: this.config.server.sslPassphrase,
       },
-      this.app
+      this.app,
     )
 
     const { io } = flashApi
@@ -43,18 +44,19 @@ class Server {
       .use(
         express.static(path.join(__dirname, '../../../public'), {
           maxAge: '30 days',
-        })
+        }),
       )
       .use(serveFavicon(path.join(__dirname, '../../../public/static/favicon.ico')))
       .set('view engine', 'pug')
       .set('views', path.join(__dirname, './views'))
+      .use(cookieParser())
       .use(
         session({
           store: new memorystore({ checkPeriod: 90000000 }), // prune expired sessions (random period ;)
           resave: true,
           saveUninitialized: true,
           secret: 'bim-bim-bim',
-        })
+        }),
       )
       .use(flashMessages())
       .use(auth.initialize())
@@ -68,7 +70,7 @@ class Server {
           origin: ['http://localhost:8000', 'https://localhost:8443'],
           methods: ['GET', 'POST', 'PUT', 'DELETE'],
           allowedHeaders: ['Content-Type', 'Authorization'],
-        })
+        }),
       )
       .use(methodOverride('X-HTTP-Method-Override'))
       .use(bodyParser.json())
@@ -83,7 +85,7 @@ class Server {
           xssProtection: true,
           nosniff: true,
           referrerPolicy: 'same-origin',
-        })
+        }),
       )
 
       //routers from routes folder
@@ -119,13 +121,13 @@ class Server {
       if (this.config.server.allowInsecure)
         this.httpServer.listen(this.config.server.httpPort, () => {
           this.log.info(
-            `HTTP Server (pid ${process.pid}) listening at port ${this.httpServer.address().port}`
+            `HTTP Server (pid ${process.pid}) listening at port ${this.httpServer.address().port}`,
           )
           resolve()
         })
       this.httpsServer.listen(this.config.server.httpsPort, () => {
         this.log.info(
-          `HTTPS Server (pid ${process.pid}) listening at port ${this.httpsServer.address().port}`
+          `HTTPS Server (pid ${process.pid}) listening at port ${this.httpsServer.address().port}`,
         )
         resolve()
       })

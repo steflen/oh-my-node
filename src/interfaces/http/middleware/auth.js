@@ -1,77 +1,139 @@
 const passport = require('passport')
 const { ExtractJwt, Strategy: JwtStrategy } = require('passport-jwt')
 const { Strategy: LocalStrategy } = require('passport-local')
+const bcryptjs = require('bcryptjs')
 
-module.exports = ({ config, userModel }) => {
-  // in case of unverified accounts, local strategy is used
-  passport.use(
-    new LocalStrategy(
-      {
-        usernameField: 'email',
-      },
-      async (email, password, done) => {
-        try {
-          const user = await userModel.findOne({ email }).populate('profile')
+module.exports = ({ appLog: log, config, userModel }) => {
 
-          if (!user) {
-            return done(new Error('Incorrect username', 403), false)
-          } else {
-            if (!user.active) {
-              return done(new Error('Account not active', 403), false)
-            }
-            if (!(await user.validatePassword(password))) {
-              return done(new Error('Incorrect password', 403), false)
-            }
-            //else
-            done(null, user)
+  const signinStrategy = new LocalStrategy({
+      usernameField: 'email',
+      passwordField: 'password',
+      session: false,
+    },
+    async function(email, password, done) {
+      try {
+        const user = await userModel.findOne({ email })
+        if (!user)
+          return done(null, false, { message: 'Incorrect username.' })
+        else {
+          if (!user.active) {
+            return done(null, false, { message: 'Accont not activated yet' })
           }
-        } catch (error) {
-          done(error, false)
+          const isValid = bcryptjs.compare(password, user.password)
+          if (!isValid)
+            return done(null, false, { message: 'Password missmatch' })
+          return done(null, user)
         }
+      } catch (error) {
+        done(error, false)
       }
-    )
+    },
   )
-
-  // strategy for verified accounts
-  // no prefix in authorization header (no "bearer","JWT" or "Token" in front of <token>)
-  passport.use(
-    new JwtStrategy(
-      {
-        jwtFromRequest: ExtractJwt.fromHeader('authorization'),
-        secretOrKey: config.jwt.secret,
-      },
-      async (payload, done) => {
-        try {
-          const user = await userModel.findById(payload.sub).populate('profile')
-          if (!user) {
-            return done(null, false)
-          }
-          done(null, user)
-        } catch (error) {
-          done(error, false)
-        }
+  const cookieExtractor = function(req) {
+    let token = null;
+    if (req && req.cookies) {
+      token = req.cookies['JWT'];
+    }
+    return token;
+  };
+  const jwtStrategy = new JwtStrategy({
+    jwtFromRequest: cookieExtractor,
+    secretOrKey: config.jwt.secret,
+  }, async (payload, done) => {
+    try {
+      const user = await userModel.findById(payload.id)
+      if (!user) {
+        done(null, false, { message: 'Invalid access token' })
       }
-    )
-  )
-
-  passport.serializeUser(function(user, done) {
-    done(null, user)
+      done(null, user)
+    } catch (error) {
+      done(error, false)
+    }
   })
 
-  passport.deserializeUser(function(user, done) {
-    done(null, user)
+
+  passport.use('signin', signinStrategy)
+  passport.use('jwt', jwtStrategy)
+
+  passport.serializeUser(function(user, done) {
+    done(null, user.id)
+  })
+
+  passport.deserializeUser(function(id, done) {
+    userModel.findById(id, function(err, user) {
+      done(err, user)
+    })
   })
 
   return {
-    initialize: () => {
-      return passport.initialize()
-    },
+    initialize: () => passport.initialize(),
     session: () => passport.session(),
-    authLocal: () => {
-      return passport.authenticate('jwt' /*,{session:false}*/)
+    attachUser: (req, res, next) => {
+      if (req.user) {
+        res.locals.user = {
+          id: req.user._id,
+          role: req.user.role,
+        }
+      }
+      next()
     },
-    authJwt: () => {
-      return passport.authenticate('local' /*,{session:false}*/)
+    jwt: passport.authenticate('jwt', {
+      failureRedirect: '/',
+      failureFlash: true,
+    }),
+    async notRegistered(req, res, next) {
+      try {
+        const { email } = req.body
+        const user = await userModel.findOne({ email })
+        if (user) {
+          req.flash('error', 'Username exists already')
+          res.redirect('/signup')
+        }
+        next()
+      } catch (err) {
+        req.flash('error', 'Error!!')
+        log.error(err)
+        res.redirect('/')
+      }
+    },
+    async checkActivationCode(req, res, next) {
+      try {
+        const { email, activationCode } = req.body
+        const user = await userModel.findOne({ email })
+        if (!user) {
+          req.flash('error', 'Account does not exist')
+          res.redirect('/activate')
+        } else {
+          if (user.active) {
+            req.flash('error', 'Account already activated')
+            res.redirect('/signin')
+          } else {
+            if (user.activationCode !== activationCode) {
+              req.flash('error', 'Invalid activation code')
+              res.redirect('/signin')
+            } else if (!user.activationCodeExpiration > Date.now()) {
+              req.flash('error', 'Code is expired')
+              res.redirect('/resend')
+            } else {
+              next()
+            }
+          }
+        }
+      } catch (err) {
+        req.flash('error', 'Error!!')
+        log.error(err)
+        res.redirect('/')
+      }
+    },
+
+    signin: passport.authenticate('signin', {
+      failureRedirect: '/signin',
+      failureFlash: true,
+    }),
+    signout(req, res) {
+      req.flash('success', 'Bye')
+      req.logout()
+      res.redirect('/')
     },
   }
 }
