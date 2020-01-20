@@ -10,6 +10,17 @@ $(document).ready(() => {
     reconnection: false,
   })
 
+  // flashIo.on('connect', function() {
+  //   console.log("flashIo frontend connect")
+  //   flashIo.emit('init', {
+  //     value: 'hallo init',
+  //   })
+  // })
+  //
+  // flashIo.on('update', function(data) {
+  //   console.log("flashIo frontend update")
+  // })
+
   // flash messages that originate from socket.io (can occur at runtime)
   flashIo.on('flashError', data => {
     PNotify.error({
@@ -22,6 +33,7 @@ $(document).ready(() => {
   })
 
   flashIo.on('flashInfo', data => {
+    console.log('flashInfo ==> ' + data)
     PNotify.info({
       text: data,
       addClass: 'nonblock',

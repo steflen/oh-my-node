@@ -1,6 +1,6 @@
 const express = require('express')
 const path = require('path')
-const http = require('http')
+
 const https = require('https')
 const serveFavicon = require('serve-favicon')
 const flashMessages = require('express-flash')
@@ -13,7 +13,7 @@ const cookieParser = require('cookie-parser')
 const methodOverride = require('method-override')
 const fs = require('fs')
 // https://github.com/adaltas/node-http-status
-const Status = require('http-status')
+// const Status = require('http-status')
 
 class Server {
   constructor({ auth, config, httpLog, httpRouter, flashApi }) {
@@ -21,22 +21,23 @@ class Server {
     this.log = httpLog
     this.app = express()
 
-    if (this.config.server.allowInsecure) {
-      this.httpServer = http.createServer(this.app)
-    }
+
     this.httpsServer = https.createServer(
       {
         key: fs.readFileSync(path.join(__dirname, './ssl/key.pem'), 'utf8'),
         cert: fs.readFileSync(path.join(__dirname, './ssl/cert.pem'), 'utf8'),
         //will throw a decrypt error if passphrase not set
         //no error handler for now
+        requestCert: false,
+        rejectUnauthorized: false,
         passphrase: this.config.server.sslPassphrase,
       },
       this.app,
     )
 
     const { io } = flashApi
-    io.attach(this.httpServer)
+    io.attach(this.httpsServer)
+
 
     this.app
       .disable('x-powered-by')
@@ -50,11 +51,23 @@ class Server {
       .set('view engine', 'pug')
       .set('views', path.join(__dirname, './views'))
       .use(cookieParser())
-      .use(
+    const hour = 3600000
+    this.app.use(
         session({
-          store: new memorystore({ checkPeriod: 90000000 }), // prune expired sessions (random period ;)
-          resave: true,
-          saveUninitialized: true,
+          //https://github.com/expressjs/session#compatible-session-stores
+          cookie: {
+            expires: new Date(Date.now() + hour),
+            maxAge: hour,
+            secure: true,
+            sameSite:true,
+            path: '/'
+          },
+          store: new memorystore({
+            // prune expired entries every 24h
+            checkPeriod: hour * 24
+          }),
+          resave: false,
+          saveUninitialized: false,
           secret: 'bim-bim-bim',
         }),
       )
@@ -92,39 +105,40 @@ class Server {
       .use(httpRouter)
 
       // catch 404 and forward to error handler
-      .use((req, res, next) => {
-        const err = new Error('Not Found')
+      .use((err, req, res, next) => {
+        console.log(err)
+        // const nerr = new Error('Not Found')
         err.status = 404
         next(err)
       })
 
-    //error handl0r
-    // .use((err, req, res, next) => {
-    //   httpLog.error(`InternalServerError ${err.message}`)
-    //   httpLog.error(err.stack)
-    //   if (process.env.NODE_ENV === 'development')
-    //     res.status(Status.INTERNAL_SERVER_ERROR).json({
-    //       type: 'InternalServerError',
-    //       message: err.message,
-    //       stack: err.stack,
-    //     })
-    //   else
-    //     res.status(Status.INTERNAL_SERVER_ERROR).json({
-    //       type: 'InternalServerError',
-    //       message: err.message,
-    //     })
-    // })
+      //error handl0r
+      .use((err, req, res, next) => {
+        httpLog.error(`InternalServerError ${err.message}`)
+        httpLog.error(err.stack)
+        if (process.env.NODE_ENV === 'development')
+        // res.status(Status.INTERNAL_SERVER_ERROR).json({
+        //   type: 'InternalServerError',
+        //   message: err.message,
+        //   stack: err.stack,
+        // })
+          res.render('partials/error', {
+            type: 'InternalServerError',
+            message: err.message,
+            stack: err.stack,
+          })
+        else
+          res.render('partials/error', {
+            type: 'InternalServerError',
+            message: err.message,
+            stack: err.stack,
+          })
+      })
   }
 
   start() {
     return new Promise(resolve => {
-      if (this.config.server.allowInsecure)
-        this.httpServer.listen(this.config.server.httpPort, () => {
-          this.log.info(
-            `HTTP Server (pid ${process.pid}) listening at port ${this.httpServer.address().port}`,
-          )
-          resolve()
-        })
+
       this.httpsServer.listen(this.config.server.httpsPort, () => {
         this.log.info(
           `HTTPS Server (pid ${process.pid}) listening at port ${this.httpsServer.address().port}`,

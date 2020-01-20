@@ -74,6 +74,7 @@ module.exports = ({ appLog: log, config, userModel }) => {
           id: req.user._id,
           role: req.user.role,
         }
+
       }
       next()
     },
