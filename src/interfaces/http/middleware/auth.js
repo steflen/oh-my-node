@@ -4,8 +4,8 @@ const { Strategy: LocalStrategy } = require('passport-local')
 const bcryptjs = require('bcryptjs')
 
 module.exports = ({ appLog: log, config, userModel }) => {
-
-  const signinStrategy = new LocalStrategy({
+  const signinStrategy = new LocalStrategy(
+    {
       usernameField: 'email',
       passwordField: 'password',
       session: false,
@@ -13,44 +13,44 @@ module.exports = ({ appLog: log, config, userModel }) => {
     async function(email, password, done) {
       try {
         const user = await userModel.findOne({ email })
-        if (!user)
-          return done(null, false, { message: 'Incorrect username.' })
+        if (!user) return done(null, false, { message: 'Incorrect username.' })
         else {
           if (!user.active) {
             return done(null, false, { message: 'Accont not activated yet' })
           }
           const isValid = bcryptjs.compare(password, user.password)
-          if (!isValid)
-            return done(null, false, { message: 'Password missmatch' })
+          if (!isValid) return done(null, false, { message: 'Password missmatch' })
           return done(null, user)
         }
       } catch (error) {
         done(error, false)
       }
-    },
+    }
   )
   const cookieExtractor = function(req) {
-    let token = null;
+    let token = null
     if (req && req.cookies) {
-      token = req.cookies['JWT'];
+      token = req.cookies['JWT']
     }
-    return token;
-  };
-  const jwtStrategy = new JwtStrategy({
-    jwtFromRequest: cookieExtractor,
-    secretOrKey: config.jwt.secret,
-  }, async (payload, done) => {
-    try {
-      const user = await userModel.findById(payload.id)
-      if (!user) {
-        done(null, false, { message: 'Invalid access token' })
+    return token
+  }
+  const jwtStrategy = new JwtStrategy(
+    {
+      jwtFromRequest: cookieExtractor,
+      secretOrKey: config.jwt.secret,
+    },
+    async (payload, done) => {
+      try {
+        const user = await userModel.findById(payload.id)
+        if (!user) {
+          done(null, false, { message: 'Invalid access token' })
+        }
+        done(null, user)
+      } catch (error) {
+        done(error, false)
       }
-      done(null, user)
-    } catch (error) {
-      done(error, false)
     }
-  })
-
+  )
 
   passport.use('signin', signinStrategy)
   passport.use('jwt', jwtStrategy)
@@ -74,7 +74,6 @@ module.exports = ({ appLog: log, config, userModel }) => {
           id: req.user._id,
           role: req.user.role,
         }
-
       }
       next()
     },
@@ -101,6 +100,8 @@ module.exports = ({ appLog: log, config, userModel }) => {
       try {
         const { email, activationCode } = req.body
         const user = await userModel.findOne({ email })
+        const now = Date.now()
+        const expire = user.activationCodeExpiration.getTime()
         if (!user) {
           req.flash('error', 'Account does not exist')
           res.redirect('/activate')
@@ -109,11 +110,11 @@ module.exports = ({ appLog: log, config, userModel }) => {
             req.flash('error', 'Account already activated')
             res.redirect('/signin')
           } else {
-            if (user.activationCode !== activationCode) {
+            if (user.activationCode !== parseInt(activationCode, 10)) {
               req.flash('error', 'Invalid activation code')
               res.redirect('/signin')
-            } else if (!user.activationCodeExpiration > Date.now()) {
-              req.flash('error', 'Code is expired')
+            } else if (expire < now) {
+              req.flash('error', 'Code is expired, resend it!')
               res.redirect('/resend')
             } else {
               next()

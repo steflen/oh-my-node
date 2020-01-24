@@ -31,15 +31,18 @@ class UserController {
 
   PostSignIn(req, res) {
     try {
-      const token = jsonwebtoken.sign({
-        id: req.user._id
-        // iss: 'nodeapp',
-        // sub: req.user._id,
-        // iat: Math.floor(new Date().getTime() / 1000), // now
-        // exp: Math.floor(Date.now() / 1000) + (60 * 60),  // one hour
-        // exp: Math.floor(new Date().setDate(new Date().getDate() + 1) / 1000) // one day
-      }, this.config.jwt.secret)
-      res.cookie('JWT', token);
+      const token = jsonwebtoken.sign(
+        {
+          id: req.user._id,
+          // iss: 'nodeapp',
+          // sub: req.user._id,
+          // iat: Math.floor(new Date().getTime() / 1000), // now
+          // exp: Math.floor(Date.now() / 1000) + (60 * 60),  // one hour
+          // exp: Math.floor(new Date().setDate(new Date().getDate() + 1) / 1000) // one day
+        },
+        this.config.jwt.secret
+      )
+      res.cookie('JWT', token)
       req.flash('success', 'Hello user')
       res.redirect('/')
     } catch (err) {
@@ -69,17 +72,16 @@ class UserController {
       //   // req.session.email = email
       //   // req.session.activationCode = activationCode
       //   // res.redirect(`/create-password`)
-      //   req.flash('success', 'Activation code has been verified')
-        res.render('user/create-password', {
-          title: 'Create your password',
-          email,
-          activationCode,
-        })
+      req.flash('success', 'Activation code has been verified, create your password now')
+      res.render('user/create-password', {
+        title: 'Create your password',
+        email,
+        activationCode,
+      })
       // } else {
       //   req.flash('error', 'Account already activated')
       //   res.redirect(`/`)
       // }
-
     } catch (err) {
       this.log.error(err.stack)
       req.flash('error', 'Activation error')
@@ -103,7 +105,7 @@ class UserController {
       // get the password from request
       let { password, confirm, email, activationCode } = req.body
 
-      if(password !== confirm){
+      if (password !== confirm) {
         req.flash('success', 'Passwords do not match')
         res.redirect('/create-password')
       }
@@ -135,7 +137,6 @@ class UserController {
     }
   }
 
-
   GetSignUp(req, res) {
     res.render('user/signup', {
       title: 'User Signup',
@@ -163,7 +164,7 @@ class UserController {
   GetProfile(req, res) {
     res.render('user/profile', {
       title: 'User profile',
-      user: req.user
+      user: req.user,
     })
   }
 }

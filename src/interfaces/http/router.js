@@ -38,6 +38,8 @@ module.exports = ({ containerMiddleware, httpLog, auth }) => {
     // activation with code, LOCAL auth is used here
     .get('/activate', UserController('GetActivate'))
     .post('/activate', auth.checkActivationCode, UserController('PostActivate'))
+    // TODO: in case activationcode is expired, need resend route
+    //.get('/resend')
     // create a password after activation
     //.get('/create-password',  UserController('GetCreatePassword'))
     .post('/create-password', UserController('PostCreatePassword'))
