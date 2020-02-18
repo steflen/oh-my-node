@@ -1,16 +1,16 @@
 # oh-my-node
 
 old-school middleware ssr application with pug renderer
+just a hobby project that does not care about spa and redux ;)
 
-qnd-rules: no tests, no comments :)
+some notes for myself: 
 
-omitting repository pattern to work with domain layer
+remarks for me: omitting repository pattern to work with domain layer
 
-todo:
+much todo:
 
 - feedback listview
 - feedback detailview
-
 - jwt api
 - sendgrid mail templates
 - user signup, with profile information
@@ -18,11 +18,8 @@ todo:
 - user listview
 - user detailview
 - user edit profile
-
 - internal dashboard for authenticated users
-
-maybe then ?
-
-- sampler factory to measure cpu/ram
+- build sampler factory to measure some stuff (cpu/ram)
 - send samples via socketio to dashboard
-- chartjs demo with sample data
+- chartjs demo with sampled data
+- host it somewhere
