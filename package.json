@@ -46,7 +46,7 @@
     "passport-jwt": "^4.0.0",
     "passport-local": "^1.0.0",
     "pidusage": "^2.0.17",
-    "pug": "^2.0.4",
+    "pug": "^3.0.1",
     "ramda": "^0.26.1",
     "rimraf": "^3.0.0",
     "serve-favicon": "^2.5.0",
